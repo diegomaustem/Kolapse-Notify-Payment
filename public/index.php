@@ -1,4 +1,7 @@
 <?php
+
+use App\Controllers\NotifyPaymentController;
+use Config\ConnectionRBMQ;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -7,9 +10,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Application Notify Payment Running!");
-    return $response;
-});
+$notifyPayment = new NotifyPaymentController();
 
 $app->run();
