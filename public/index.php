@@ -1,5 +1,5 @@
 <?php
-
+use Predis\Client;
 use App\Controllers\NotifyPaymentController;
 use Config\ConnectionRBMQ;
 use Psr\Http\Message\ResponseInterface as Response;
