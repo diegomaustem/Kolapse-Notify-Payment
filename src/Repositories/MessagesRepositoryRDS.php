@@ -6,18 +6,18 @@ namespace App\Repositories;
 class MessagesRepositoryRDS 
 {
     private $connectionRedis;
-    private $queue_generate_contract = 'queue_generate_contract';
-    private $queue_notify_payment    = 'notify_payment';
+    private $storage_queue;
 
-    public function __construct($connection)
+    public function __construct($connection, $storage_queue)
     {
         $this->connectionRedis = $connection;
+        $this->storage_queue = $storage_queue;
     }
 
     public function getMsgsOfRDS()
     {
          try {
-             return $this->connectionRedis->lRange($this->queue_generate_contract, 0, -1);
+             return $this->connectionRedis->lRange($this->storage_queue, 0, -1);
          } catch (\Throwable $th) {
              return $th;
         }
@@ -26,11 +26,13 @@ class MessagesRepositoryRDS
     public function addMsgOfRDS($msg)
     {
         // OK - Funcionando ::: 
-        $this->connectionRedis->lPush($this->queue_generate_contract, $msg);
+        $this->connectionRedis->lPush($this->storage_queue, $msg);
     }
 
     public function deleteMsgOfRDS()
     {
+
+        // $this->connectionRedis->lTrim($this);
 
     }
 }

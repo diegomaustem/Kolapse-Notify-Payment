@@ -43,18 +43,20 @@ class RabbitMQService
         $this->channelRBMQ->queue_bind($queue_generate_contract, $exchange);
         $this->channelRBMQ->queue_bind($queue_notify_payment, $exchange);
 
-        // Função para processar mensagens
         $callbackGenerateContract = function ($msg) {
-            $this->useStoresRDS($msg->body);
+            $this->useStoresRDS($msg->body, 'queue_generate_contract');
         };
 
-        // $callbackNotifyPayment = function ($msg) {
-        //     $this->queue_notify_payment_RDS[] = $msg->body;
-        // };
+        $callbackNotifyPayment = function ($msg) {
+            $this->useStoresRDS($msg->body, 'queue_notify_payment');
+        };
 
         // Consumo das mensagens das filas
         $this->channelRBMQ->basic_consume($queue_generate_contract, '', false, true, false, false, $callbackGenerateContract);
-        // $this->channelRBMQ->basic_consume($queue_notify_payment, '', false, true, false, false, $callbackNotifyPayment);
+        $this->channelRBMQ->basic_consume($queue_notify_payment, '', false, true, false, false, $callbackNotifyPayment);
+
+        // Faz o resgate das msg no redis ::: 
+        // Limpa o redis ::: 
 
         // Esperar por mensagens
         while ($this->channelRBMQ->is_consuming()) {
@@ -66,13 +68,12 @@ class RabbitMQService
         }
     }
 
-    private function useStoresRDS($msg) 
+    private function useStoresRDS($msg, $storage_queue) 
     {
         $connectionRedis = new ConnectionRDS(new Client());
         $connection = $connectionRedis->getConnectionRDS();
 
-        $serviceRepositoryRDS = new MessagesRepositoryRDS($connection);
-        $serviceRepositoryRDS->getMsgsOfRDS();
+        $serviceRepositoryRDS = new MessagesRepositoryRDS($connection, $storage_queue);
         $serviceRepositoryRDS->addMsgOfRDS($msg);
     }
 }
