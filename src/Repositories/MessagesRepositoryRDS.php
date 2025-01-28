@@ -11,28 +11,42 @@ class MessagesRepositoryRDS
     public function __construct($connection, $storage_queue)
     {
         $this->connectionRedis = $connection;
-        $this->storage_queue = $storage_queue;
+        $this->storage_queue   = $storage_queue;
     }
 
     public function getMsgsOfRDS()
     {
-         try {
-             return $this->connectionRedis->lRange($this->storage_queue, 0, -1);
-         } catch (\Throwable $th) {
-             return $th;
+        try {
+            $this->connectionRedis->lRange($this->storage_queue, 0, -1);
+        } catch (\Throwable $th) {
+            return $th;
         }
     }
 
     public function addMsgOfRDS($msg)
     {
-        // OK - Funcionando ::: 
-        $this->connectionRedis->lPush($this->storage_queue, $msg);
+        if ($this->connectionRedis->exists($this->storage_queue)) {
+            try {
+                $this->connectionRedis->lPush($this->storage_queue, $msg);
+            } catch (\Throwable $th) {
+                return $th;
+            }
+        } else {
+            try {
+                $this->connectionRedis->del($this->storage_queue);
+                $this->connectionRedis->lPush($this->storage_queue, $msg);
+            } catch (\Throwable $th) {
+                return $th;
+            }
+        }        
     }
 
     public function deleteMsgOfRDS()
     {
-
-        // $this->connectionRedis->lTrim($this);
-
+        try {
+            $this->connectionRedis->del($this->storage_queue);
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
 }

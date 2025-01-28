@@ -16,7 +16,6 @@ class NotifyPaymentController
 
     public function consumerMessages()
     {
-        // Instanciar o service do RabbitMQ ::: 
         $rabbitMQService = new RabbitMQService();
     }
 }

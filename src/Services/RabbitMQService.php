@@ -55,9 +55,6 @@ class RabbitMQService
         $this->channelRBMQ->basic_consume($queue_generate_contract, '', false, true, false, false, $callbackGenerateContract);
         $this->channelRBMQ->basic_consume($queue_notify_payment, '', false, true, false, false, $callbackNotifyPayment);
 
-        // Faz o resgate das msg no redis ::: 
-        // Limpa o redis ::: 
-
         // Esperar por mensagens
         while ($this->channelRBMQ->is_consuming()) {
             try {
