@@ -31,28 +31,20 @@ class RabbitMQService
         $exchange = 'payment_users_fanout';
         $this->channelRBMQ->exchange_declare($exchange, 'fanout', false, true, false);
 
-        // Filas
-        $queue_generate_contract = 'generate_contract';
+        // Fila
         $queue_notify_payment    = 'notify_payment';
 
-        // Declarando as filas 
-        $this->channelRBMQ->queue_declare($queue_generate_contract, false, true, false, false);
+        // Declarando as filas
         $this->channelRBMQ->queue_declare($queue_notify_payment, false, true, false, false);
 
-        // Vincular as filas ao exchange
-        $this->channelRBMQ->queue_bind($queue_generate_contract, $exchange);
+        // Vincular as fila ao exchange
         $this->channelRBMQ->queue_bind($queue_notify_payment, $exchange);
-
-        $callbackGenerateContract = function ($msg) {
-            $this->useStoresRDS($msg->body, 'queue_generate_contract');
-        };
 
         $callbackNotifyPayment = function ($msg) {
             $this->useStoresRDS($msg->body, 'queue_notify_payment');
         };
 
-        // Consumo das mensagens das filas
-        $this->channelRBMQ->basic_consume($queue_generate_contract, '', false, true, false, false, $callbackGenerateContract);
+        // Consumo das mensagens das fila
         $this->channelRBMQ->basic_consume($queue_notify_payment, '', false, true, false, false, $callbackNotifyPayment);
 
         // Esperar por mensagens

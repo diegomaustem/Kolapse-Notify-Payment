@@ -14,15 +14,6 @@ class MessagesRepositoryRDS
         $this->storage_queue   = $storage_queue;
     }
 
-    public function getMsgsOfRDS()
-    {
-        try {
-            $this->connectionRedis->lRange($this->storage_queue, 0, -1);
-        } catch (\Throwable $th) {
-            return $th;
-        }
-    }
-
     public function addMsgOfRDS($msg)
     {
         if ($this->connectionRedis->exists($this->storage_queue)) {
@@ -39,14 +30,5 @@ class MessagesRepositoryRDS
                 return $th;
             }
         }        
-    }
-
-    public function deleteMsgOfRDS()
-    {
-        try {
-            $this->connectionRedis->del($this->storage_queue);
-        } catch (\Throwable $th) {
-            return $th;
-        }
     }
 }
