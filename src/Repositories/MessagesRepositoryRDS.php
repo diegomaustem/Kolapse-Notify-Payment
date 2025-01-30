@@ -31,4 +31,17 @@ class MessagesRepositoryRDS
             }
         }        
     }
+
+    public function addNotifyMsgRDS()
+    {
+        $key = 'has_message'; 
+        $value = 'has';
+
+        if ($this->connectionRedis->exists($key)) {
+            $this->connectionRedis->del($key);
+            $this->connectionRedis->set($key, $value);
+        } else {
+            $this->connectionRedis->set($key, $value);
+        }
+    }
 }

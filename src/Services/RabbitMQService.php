@@ -9,7 +9,6 @@ use Predis\Client;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-
 class RabbitMQService
 {    
     private $rabbitMQConnectionInstance;
@@ -64,5 +63,6 @@ class RabbitMQService
 
         $serviceRepositoryRDS = new MessagesRepositoryRDS($connection, $storage_queue);
         $serviceRepositoryRDS->addMsgOfRDS($msg);
+        $serviceRepositoryRDS->addNotifyMsgRDS();
     }
 }
